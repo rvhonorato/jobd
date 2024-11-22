@@ -1,5 +1,10 @@
 # `jobd` (Job Daemon)
 
+![GitHub License](https://img.shields.io/github/license/rvhonorato/jobd)
+[![ci](https://github.com/rvhonorato/jobd/actions/workflows/ci.yml/badge.svg)](https://github.com/rvhonorato/jobd/actions/workflows/ci.yml)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/ae50eb8e1303415f981ec755f0b8a28f)](https://app.codacy.com/gh/rvhonorato/jobd/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Coverage/ae50eb8e1303415f981ec755f0b8a28f)](https://app.codacy.com/gh/rvhonorato/jobd/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_coverage)
+
 _documentation wip_
 
 `jobd` is a lightweight Golang application designed to facilitate interaction with research software through REST APIs. It is specifically engineered to be deployed in multi-stage Docker builds, providing a flexible and portable solution for job management and file transfer.
