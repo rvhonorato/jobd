@@ -72,7 +72,88 @@ ENTRYPOINT [ "/bin/jobd" ]
 
 ## API description
 
+### `/api/upload`
+
+The `/api/upload` endpoint allows users to submit a job for processing in the queue system.
+
+## Request Details
+
+### HTTP Method
+
+`POST`
+
+### Request Body
+
+The request body should be a JSON object representing a Job, with the following key properties:
+
+| Field    | Type    | Required | Description                           |
+| -------- | ------- | -------- | ------------------------------------- |
+| `ID`     | string  | Optional | Unique identifier for the job         |
+| `Input`  | string  | Required | Base64 encoded .zip file containing:  |
+| `Slurml` | boolean | Optional | Flag to indicate Slurm job submission |
+
+### Input Zip File Structure
+
+The uploaded zip file must contain:
+
+- `run.sh`: Executable shell script that defines the application command
+- Input files required by the application
+
 Soon!
+
+### `/api/get:id`
+
+The `/api/get/:id` endpoint allows users to retrieve the status and details of a previously submitted job.
+
+### Request Details
+
+### HTTP Method
+
+`GET`
+
+### URL Parameters
+
+| Parameter | Type   | Required | Description                              |
+| --------- | ------ | -------- | ---------------------------------------- |
+| `id`      | string | Required | Unique identifier of the job to retrieve |
+
+## Response
+
+### Successful Responses
+
+#### Job Not Yet Completed
+
+- **Status Code**: `206 Partial Content`
+  - Returned when job is in a partial/incomplete state
+- **Body**: Job object with limited details
+
+#### Job Completed
+
+- **Status Code**: `200 OK`
+  - Returned when job has finished processing
+- **Body**: Job object with final status
+
+### Response Object
+
+The returned job object will have the following key characteristics:
+
+- Job ID preserved
+- Status of the job
+- Final result/output - also a base64 encoded zip file
+- **Note**: `Input` and `Path` fields are deliberately cleared before response
+
+### Possible Job Statuses
+
+- Pending
+- Processing
+- Partial
+- Completed
+- Failed
+
+### Error Responses
+
+- **404 Not Found**: Job ID does not exist
+- **500 Internal Server Error**: Server-side processing error
 
 ## Technical Characteristics
 
