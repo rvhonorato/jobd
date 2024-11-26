@@ -1,0 +1,4 @@
+builds:
+  - # GOOS list to build for.
+    goos:
+      - linux
