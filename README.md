@@ -5,19 +5,49 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/ae50eb8e1303415f981ec755f0b8a28f)](https://app.codacy.com/gh/rvhonorato/jobd/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/ae50eb8e1303415f981ec755f0b8a28f)](https://app.codacy.com/gh/rvhonorato/jobd/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_coverage)
 
+This is a central component [WeNMR](https://wenmr.science.uu.nl), a worldwide 
+e-Infrastructure for NMR and structural biology - operated by 
+the [BonvinLab](https://bonvinlab.org) at the [Utrecht University](https://uu.nl). 
+
+It enables interaction between the web backend and the 
+[research software developed in the Bonvinlab](https://github.com/haddocking) which
+are offered as web services for a community of over 
+[52.000 users accross 154 countries](https://rascar.science.uu.nl/new/stats).
+
 `jobd` is a lightweight Golang application designed to facilitate interaction with
 research software through REST APIs. It is specifically engineered to be deployed
 in multi-stage Docker builds, providing a flexible and portable solution for job
 management and file transfer.
 
-## Key Features
+
+
+```mermaid
+flowchart LR
+    B([User]) --> C[Web App]
+    C[Web App] <--> Y[(Database)]
+    C[Web App] --> X{{Orchestrator}}
+    X -->|jobd| D[[prodigy]]
+    X -->|jobd| E[[disvis]]
+    X -->|jobd| G[[other_service]]
+    E -->|slurml| H[local HPC]
+```
+
+🚧 Documentation is still a work in progess 🚧
+
+## Features
 
 Implements two primary REST API endpoints:
 
-- `/upload`: Allows backend systems or scripts to upload files to the container
-- `/download`: Enables retrieval of files from the container
+- `POST /api/upload` Allows backend systems or scripts to upload files to the container
+- `GET /api/get/:id` Enables retrieval of files (results) from the container
 
-## Usage
+Use Cases
+
+- Microservice-based job submission and file handling
+- Simplified API interfaces for research software workflows
+
+
+## Configuration
 
 The application is optimized for containerized environments,
 supporting multi-stage build patterns or simple binary execution.
@@ -65,24 +95,11 @@ RUN tar -xzf /tmp/jobd_${JOBD_VERSION}_${JOBD_ARCH}.tar.gz -C /bin/ \
 ENTRYPOINT [ "/bin/jobd" ]
 ```
 
-## Use Cases
-
-- Microservice-based job submission and file handling
-- Simplified API interfaces for research software workflows
-
 ## API description
 
-### `/api/upload`
+### `POST /api/upload` - submit a job for processing in the queue system.
 
-The `/api/upload` endpoint allows users to submit a job for processing in the queue system.
-
-## Request Details
-
-### HTTP Method
-
-`POST`
-
-### Request Body
+#### Request Body
 
 The request body should be a JSON object representing a Job, with the following key properties:
 
@@ -92,48 +109,36 @@ The request body should be a JSON object representing a Job, with the following 
 | `Input`  | string  | Required | Base64 encoded .zip file containing:  |
 | `Slurml` | boolean | Optional | Flag to indicate Slurm job submission |
 
-### Input Zip File Structure
+#### Input Zip File Structure
 
 The uploaded zip file must contain:
 
 - `run.sh`: Executable shell script that defines the application command
 - Input files required by the application
 
-Soon!
+### `GET /api/get/:id` - retrieve the status/result/details of a previously submitted job.
 
-### `/api/get:id`
-
-The `/api/get/:id` endpoint allows users to retrieve the status and details of a previously submitted job.
-
-### Request Details
-
-### HTTP Method
-
-`GET`
-
-### URL Parameters
+#### URL Parameters
 
 | Parameter | Type   | Required | Description                              |
 | --------- | ------ | -------- | ---------------------------------------- |
 | `id`      | string | Required | Unique identifier of the job to retrieve |
 
-## Response
+#### Response
 
-### Successful Responses
-
-#### Job Not Yet Completed
+##### Job Not Yet Completed
 
 - **Status Code**: `206 Partial Content`
   - Returned when job is in a partial/incomplete state
 - **Body**: Job object with limited details
 
-#### Job Completed
+##### Job Completed
 
 - **Status Code**: `200 OK`
   - Returned when job has finished processing
 - **Body**: Job object with final status
 
-### Response Object
+#### Response Object
 
 The returned job object will have the following key characteristics:
 
@@ -142,7 +147,7 @@ The returned job object will have the following key characteristics:
 - Final result/output - also a base64 encoded zip file
 - **Note**: `Input` and `Path` fields are deliberately cleared before response
 
-### Possible Job Statuses
+#### Possible Job Statuses
 
 - Pending
 - Processing
@@ -150,7 +155,7 @@ The returned job object will have the following key characteristics:
 - Completed
 - Failed
 
-### Error Responses
+#### Error Responses
 
 - **404 Not Found**: Job ID does not exist
 - **500 Internal Server Error**: Server-side processing error
