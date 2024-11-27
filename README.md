@@ -46,6 +46,107 @@ Use Cases
 - Microservice-based job submission and file handling
 - Simplified API interfaces for research software workflows
 
+## Usage
+
+The purpose of `jobd` is to be an adapter to allow backend/scripts to interact with
+_any_ sort of command-line based application.
+
+It takes a base64 encoded `.zip` file that **must** contain a `run.sh` script.
+
+Once a `POST` request is made to `/api/upload`, `jobd` creates an entry in its
+micro(embedded) database and saves the `input` to disk (inside the container).
+
+It will check every second for tasks that are `QUEUED` in the database, then
+make a system call to the `run.sh` script and report its exit code.
+
+All the resulting contents are then compressed (also base64 `.zip`) and
+returned as the `output`.
+
+### Example
+
+> `jobd` was not designed for this type of interaction, but rather via automated
+> scripts. The workflow below is just to demonstrate how it works.
+
+[PRODIGY](https://github.com/haddocking/prodigy) is a command-line application
+to calculate binding energies between proteins, developed by the BonvinLab.
+It takes as input a single protein structure and is executed simply with:
+
+```bash
+prodigy input.pdb
+```
+
+This application can be installed from `pip`, see below how we can containerize
+`prodigy` and add `jobd` as the interface.
+
+```dockerfile
+FROM ubuntu:latest AS build
+
+RUN pip install prodigy
+
+# Here you could also clone a repository and install it;
+## WORKDIR /src/app
+## RUN git clone https://github.com/username/code . && \
+##  bash install.sh ## or pip install, or anything like that
+
+# Get `jobd` from the github image repository
+FROM ghcr.io/rvhonorato/jobd:latest AS jobd
+
+WORKDIR /data
+COPY --from=jobd /jobd /bin/jobd
+
+ENTRYPOINT [ "/bin/jobd" ]
+```
+
+After building and running this image, you can then interact with the container
+via its [APIs](https://rvhonorato.me/jobd).
+
+Then prepare the payload, it must contain the `run.sh` file and the input files.
+
+- `run.sh` file:
+
+  ```bash
+  #!/bin/bash
+
+  prodigy input.pdb
+
+  # any other steps you want to add here
+  ```
+
+Prepare the payload;
+
+```bash
+# Make a zip file called `input.zip`
+$ zip files.zip run.sh input.pdb
+# convert it to base64
+$ base64 files.zip > files.zip.b64
+```
+
+Then prepare the input `.json` file - it is expected to be in the following format:
+
+```json
+{
+  "id": "name-of-my-job",
+  "input": "BASE64_STRING_HERE"
+}
+```
+
+This can easily be done with more scripting (or using any other method)
+
+```bash
+jq -n --arg id "name-of-my-job" --arg input "$(base64 files.zip)" \
+   '{id: $id, input: $input}' > job.json
+```
+
+Finally submit the job to the container:
+
+```bash
+curl -X POST http://your.server:8080/api/upload \
+     -H "Content-Type: application/json" \
+     -d @job.json
+```
+
+And later download the results by making a `GET` request to `/api/get/name-of-my-job`
+
 ## Configuration
 
 The application is optimized for containerized environments,
@@ -71,7 +172,7 @@ FROM ghcr.io/rvhonorato/jobd:${JOBD_VERSION} AS jobd
 FROM ghcr.io/haddocking/arctic3d:v0.5.1 AS base
 
 WORKDIR /data
-COPY --from=jobd /path/to/jobd /bin/jobd
+COPY --from=jobd /jobd /bin/jobd
 
 ENTRYPOINT [ "/bin/jobd" ]
 ```
@@ -93,10 +194,6 @@ RUN tar -xzf /tmp/jobd_${JOBD_VERSION}_${JOBD_ARCH}.tar.gz -C /bin/ \
 
 ENTRYPOINT [ "/bin/jobd" ]
 ```
-
-## Usage
-
-Soon!
 
 ## Technical Characteristics
 
