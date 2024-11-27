@@ -14,24 +14,29 @@ import (
 
 // UploadJob godoc
 // @Summary Upload a new job to the queue
-// @Description Validates and creates a new job in the system
-// @Tags Jobs
+// @Description Upload a payload. `id` is a unique user-provided job identificator. The `input` field must contain a base64 encoded`.zip` file with a `run.sh` script and the input data. `slurml` marks the job for redirection to the `slurml` endpoint (wip)
 // @Accept json
 // @Produce json
-// @Param job body jobs.Job true "Job to be uploaded"
+// @Param job body jobs.Upload true "Job to be uploaded"
 // @Success 201 {object} jobs.Job "Job successfully created"
 // @Failure 400 {object} errors.RestErr "Bad request - validation error"
 // @Failure 500 {object} errors.RestErr "Internal server error"
 // @Router /api/upload [post]
 func UploadJob(c *gin.Context) {
 	var j jobs.Job
-
-	err := c.BindJSON(&j)
+	var uploadRequest jobs.Upload
+	err := c.BindJSON(&uploadRequest)
 	if err != nil {
 		glog.Error(err)
 		err := errors.NewBadRequestError("error reading job from request " + err.Error())
 		c.JSON(err.Status, err)
 		return
+	}
+
+	j = jobs.Job{
+		ID:     uploadRequest.Id,
+		Input:  uploadRequest.Input,
+		Slurml: uploadRequest.Slurml,
 	}
 
 	if err := j.Validate(); err != nil {
@@ -53,8 +58,7 @@ func UploadJob(c *gin.Context) {
 
 // RetrieveJob godoc
 // @Summary Retrieve a job from the queue
-// @Description Fetches a job by its ID with partial content handling
-// @Tags Jobs
+// @Description Fetches a job by its `id` (provided by the user) with partial content handling
 // @Produce json
 // @Param id path string true "Job ID"
 // @Success 200 {object} jobs.Job "Successfully retrieved job"

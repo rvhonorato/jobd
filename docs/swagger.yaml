@@ -11,12 +11,10 @@ definitions:
     type: object
   jobs.Job:
     properties:
-      ID:
+      id:
         type: string
-      Input:
+      input:
         type: string
-      Slurml:
-        type: boolean
       lastUpdated:
         type: string
       message:
@@ -27,8 +25,19 @@ definitions:
         type: string
       slurmID:
         type: integer
+      slurml:
+        type: boolean
       status:
         type: string
+    type: object
+  jobs.Upload:
+    properties:
+      id:
+        type: string
+      input:
+        type: string
+      slurml:
+        type: boolean
     type: object
 info:
   contact: {}
@@ -38,7 +47,8 @@ info:
 paths:
   /api/get/{id}:
     get:
-      description: Fetches a job by its ID with partial content handling
+      description: Fetches a job by its `id` (provided by the user) with partial content
+        handling
       parameters:
       - description: Job ID
         in: path
@@ -65,20 +75,21 @@ paths:
           schema:
             $ref: '#/definitions/errors.RestErr'
       summary: Retrieve a job from the queue
-      tags:
-      - Jobs
   /api/upload:
     post:
       consumes:
       - application/json
-      description: Validates and creates a new job in the system
+      description: Upload a payload. `id` is a unique user-provided job identificator.
+        The `input` field must contain a base64 encoded`.zip` file with a `run.sh`
+        script and the input data. `slurml` marks the job for redirection to the `slurml`
+        endpoint (wip)
       parameters:
       - description: Job to be uploaded
         in: body
         name: job
         required: true
         schema:
-          $ref: '#/definitions/jobs.Job'
+          $ref: '#/definitions/jobs.Upload'
       produces:
       - application/json
       responses:
@@ -95,6 +106,4 @@ paths:
           schema:
             $ref: '#/definitions/errors.RestErr'
       summary: Upload a new job to the queue
-      tags:
-      - Jobs
 swagger: "2.0"

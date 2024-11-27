@@ -17,12 +17,9 @@ const docTemplate = `{
     "paths": {
         "/api/get/{id}": {
             "get": {
-                "description": "Fetches a job by its ID with partial content handling",
+                "description": "Fetches a job by its ` + "`" + `id` + "`" + ` (provided by the user) with partial content handling",
                 "produces": [
                     "application/json"
-                ],
-                "tags": [
-                    "Jobs"
                 ],
                 "summary": "Retrieve a job from the queue",
                 "parameters": [
@@ -64,15 +61,12 @@ const docTemplate = `{
         },
         "/api/upload": {
             "post": {
-                "description": "Validates and creates a new job in the system",
+                "description": "Upload a payload. ` + "`" + `id` + "`" + ` is a unique user-provided job identificator. The ` + "`" + `input` + "`" + ` field must contain a base64 encoded` + "`" + `.zip` + "`" + ` file with a ` + "`" + `run.sh` + "`" + ` script and the input data. ` + "`" + `slurml` + "`" + ` marks the job for redirection to the ` + "`" + `slurml` + "`" + ` endpoint (wip)",
                 "consumes": [
                     "application/json"
                 ],
                 "produces": [
                     "application/json"
-                ],
-                "tags": [
-                    "Jobs"
                 ],
                 "summary": "Upload a new job to the queue",
                 "parameters": [
@@ -82,7 +76,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/jobs.Job"
+                            "$ref": "#/definitions/jobs.Upload"
                         }
                     }
                 ],
@@ -127,14 +121,11 @@ const docTemplate = `{
         "jobs.Job": {
             "type": "object",
             "properties": {
-                "ID": {
+                "id": {
                     "type": "string"
                 },
-                "Input": {
+                "input": {
                     "type": "string"
-                },
-                "Slurml": {
-                    "type": "boolean"
                 },
                 "lastUpdated": {
                     "type": "string"
@@ -151,8 +142,25 @@ const docTemplate = `{
                 "slurmID": {
                     "type": "integer"
                 },
+                "slurml": {
+                    "type": "boolean"
+                },
                 "status": {
                     "type": "string"
+                }
+            }
+        },
+        "jobs.Upload": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "input": {
+                    "type": "string"
+                },
+                "slurml": {
+                    "type": "boolean"
                 }
             }
         }

@@ -20,16 +20,22 @@ import (
 
 var DEBUG = os.Getenv("DEBUG") == "true"
 
+type Upload struct {
+	Id     string `json:"id"`
+	Input  string `json:"input"`
+	Slurml bool   `json:"slurml"`
+}
+
 type Job struct {
-	ID          string `json:"ID"`
+	LastUpdated time.Time
+	ID          string
 	Status      string
 	Path        string
-	Input       string `json:"Input"`
+	Input       string
 	Output      string
 	Message     string
-	Slurml      bool `json:"Slurml"`
 	SlurmID     int
-	LastUpdated time.Time
+	Slurml      bool
 }
 
 type JobList struct {
@@ -49,7 +55,6 @@ type SlurmGetResponse struct {
 //   - create a directory for the job
 //   - decompress input in the job directory
 func (j *Job) Prepare() error {
-
 	// Create the job directory
 	_ = os.MkdirAll(j.Path, 0755)
 
@@ -74,12 +79,10 @@ func (j *Job) Prepare() error {
 	j.UpdateStatus(status.Prepared)
 
 	return nil
-
 }
 
 // Run executes the job by running the run.sh script in the job directory
 func (j *Job) Run() string {
-
 	glog.Infof("Going into %s and executing run.sh", j.Path)
 
 	// Run the job
@@ -118,7 +121,6 @@ func (j *Job) Run() string {
 
 // PostToSlurml posts the job to the SLURML API
 func (j *Job) PostToSlurml() string {
-
 	// Get the SLURML API URL
 	slurmAPIURL := os.Getenv("SLURML_API_URL")
 	if slurmAPIURL == "" {
@@ -187,7 +189,6 @@ func (j *Job) PostToSlurml() string {
 	j.UpdateStatus(status.Running)
 
 	return j.Status
-
 }
 
 // GetFromSlurml gets the job from the SLURML API
@@ -276,7 +277,6 @@ func (j *Job) GetFromSlurml() string {
 
 // Execute prepares and runs the job
 func (j *Job) Execute() error {
-
 	// Prepare the job
 	err := j.Prepare()
 	if err != nil {
@@ -301,13 +301,11 @@ func (j *Job) Execute() error {
 
 // Validate checks if the job is valid
 func (j *Job) Validate() error {
-
 	if j.ID == "" {
 		return errors.New("job id is required")
 	}
 
 	return nil
-
 }
 
 // AddMessage adds a message to the job
@@ -317,7 +315,6 @@ func (j *Job) AddMessage(message string) {
 
 // GetSlurmResponse unmarshals the response from the SLURML API
 func GetSlurmResponse(r *http.Response) (SlurmGetResponse, error) {
-
 	slurmReponse := SlurmGetResponse{}
 	err := json.NewDecoder(r.Body).Decode(&slurmReponse)
 	if err != nil {
