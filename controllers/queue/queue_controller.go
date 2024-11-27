@@ -12,9 +12,18 @@ import (
 	"github.com/golang/glog"
 )
 
-// UploadJob is the controller for uploading a job to the queue
+// UploadJob godoc
+// @Summary Upload a new job to the queue
+// @Description Validates and creates a new job in the system
+// @Tags Jobs
+// @Accept json
+// @Produce json
+// @Param job body jobs.Job true "Job to be uploaded"
+// @Success 201 {object} jobs.Job "Job successfully created"
+// @Failure 400 {object} errors.RestErr "Bad request - validation error"
+// @Failure 500 {object} errors.RestErr "Internal server error"
+// @Router /api/upload [post]
 func UploadJob(c *gin.Context) {
-
 	var j jobs.Job
 
 	err := c.BindJSON(&j)
@@ -40,12 +49,20 @@ func UploadJob(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, result)
-
 }
 
-// GetJob is the controller for getting a job from the queue
+// RetrieveJob godoc
+// @Summary Retrieve a job from the queue
+// @Description Fetches a job by its ID with partial content handling
+// @Tags Jobs
+// @Produce json
+// @Param id path string true "Job ID"
+// @Success 200 {object} jobs.Job "Successfully retrieved job"
+// @Success 206 {object} jobs.Job "Partially completed job"
+// @Failure 404 {object} errors.RestErr "Job not found"
+// @Failure 500 {object} errors.RestErr "Internal server error"
+// @Router /api/get/{id} [get]
 func RetrieveJob(c *gin.Context) {
-
 	id := c.Param("id")
 	j := jobs.Job{ID: id}
 
@@ -66,5 +83,4 @@ func RetrieveJob(c *gin.Context) {
 	default:
 		c.JSON(http.StatusOK, result)
 	}
-
 }

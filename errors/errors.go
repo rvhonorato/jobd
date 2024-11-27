@@ -4,9 +4,9 @@ package errors
 import "net/http"
 
 type RestErr struct {
+	Error   string `json:"error"`
 	Message string `json:"message"`
 	Status  int    `json:"status"`
-	Error   string `json:"error"`
 }
 
 func NewInternalServerError(message string) *RestErr {
@@ -23,7 +23,6 @@ func NewBadRequestError(message string) *RestErr {
 		Status:  http.StatusBadRequest,
 		Error:   "bad_request",
 	}
-
 }
 
 func NewConflictError(message string) *RestErr {

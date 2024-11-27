@@ -1,0 +1,96 @@
+definitions:
+  errors.RestErr:
+    properties:
+      error:
+        type: string
+      message:
+        type: string
+      status:
+        type: integer
+    type: object
+  jobs.Job:
+    properties:
+      ID:
+        type: string
+      Input:
+        type: string
+      Slurml:
+        type: boolean
+      lastUpdated:
+        type: string
+      message:
+        type: string
+      output:
+        type: string
+      path:
+        type: string
+      slurmID:
+        type: integer
+      status:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /api/get/{id}:
+    get:
+      description: Fetches a job by its ID with partial content handling
+      parameters:
+      - description: Job ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved job
+          schema:
+            $ref: '#/definitions/jobs.Job'
+        "206":
+          description: Partially completed job
+          schema:
+            $ref: '#/definitions/jobs.Job'
+        "404":
+          description: Job not found
+          schema:
+            $ref: '#/definitions/errors.RestErr'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/errors.RestErr'
+      summary: Retrieve a job from the queue
+      tags:
+      - Jobs
+  /api/upload:
+    post:
+      consumes:
+      - application/json
+      description: Validates and creates a new job in the system
+      parameters:
+      - description: Job to be uploaded
+        in: body
+        name: job
+        required: true
+        schema:
+          $ref: '#/definitions/jobs.Job'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Job successfully created
+          schema:
+            $ref: '#/definitions/jobs.Job'
+        "400":
+          description: Bad request - validation error
+          schema:
+            $ref: '#/definitions/errors.RestErr'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/errors.RestErr'
+      summary: Upload a new job to the queue
+      tags:
+      - Jobs
+swagger: "2.0"
