@@ -5,21 +5,19 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/ae50eb8e1303415f981ec755f0b8a28f)](https://app.codacy.com/gh/rvhonorato/jobd/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/ae50eb8e1303415f981ec755f0b8a28f)](https://app.codacy.com/gh/rvhonorato/jobd/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_coverage)
 
-This is a central component [WeNMR](https://wenmr.science.uu.nl), a worldwide 
-e-Infrastructure for NMR and structural biology - operated by 
-the [BonvinLab](https://bonvinlab.org) at the [Utrecht University](https://uu.nl). 
+This is a central component [WeNMR](https://wenmr.science.uu.nl), a worldwide
+e-Infrastructure for NMR and structural biology - operated by
+the [BonvinLab](https://bonvinlab.org) at the [Utrecht University](https://uu.nl).
 
-It enables interaction between the web backend and the 
+It enables interaction between the web backend and the
 [research software developed in the Bonvinlab](https://github.com/haddocking) which
-are offered as web services for a community of over 
+are offered as web services for a community of over
 [52.000 users accross 154 countries](https://rascar.science.uu.nl/new/stats).
 
 `jobd` is a lightweight Golang application designed to facilitate interaction with
 research software through REST APIs. It is specifically engineered to be deployed
 in multi-stage Docker builds, providing a flexible and portable solution for job
 management and file transfer.
-
-
 
 ```mermaid
 flowchart LR
@@ -41,11 +39,12 @@ Implements two primary REST API endpoints:
 - `POST /api/upload` Allows backend systems or scripts to upload files to the container
 - `GET /api/get/:id` Enables retrieval of files (results) from the container
 
+Check the [API docs](https://rvhonorato.me/jobd) for more information
+
 Use Cases
 
 - Microservice-based job submission and file handling
 - Simplified API interfaces for research software workflows
-
 
 ## Configuration
 
@@ -95,70 +94,9 @@ RUN tar -xzf /tmp/jobd_${JOBD_VERSION}_${JOBD_ARCH}.tar.gz -C /bin/ \
 ENTRYPOINT [ "/bin/jobd" ]
 ```
 
-## API description
+## Usage
 
-### `POST /api/upload` - submit a job for processing in the queue system.
-
-#### Request Body
-
-The request body should be a JSON object representing a Job, with the following key properties:
-
-| Field    | Type    | Required | Description                           |
-| -------- | ------- | -------- | ------------------------------------- |
-| `ID`     | string  | Optional | Unique identifier for the job         |
-| `Input`  | string  | Required | Base64 encoded .zip file containing:  |
-| `Slurml` | boolean | Optional | Flag to indicate Slurm job submission |
-
-#### Input Zip File Structure
-
-The uploaded zip file must contain:
-
-- `run.sh`: Executable shell script that defines the application command
-- Input files required by the application
-
-### `GET /api/get/:id` - retrieve the status/result/details of a previously submitted job.
-
-#### URL Parameters
-
-| Parameter | Type   | Required | Description                              |
-| --------- | ------ | -------- | ---------------------------------------- |
-| `id`      | string | Required | Unique identifier of the job to retrieve |
-
-#### Response
-
-##### Job Not Yet Completed
-
-- **Status Code**: `206 Partial Content`
-  - Returned when job is in a partial/incomplete state
-- **Body**: Job object with limited details
-
-##### Job Completed
-
-- **Status Code**: `200 OK`
-  - Returned when job has finished processing
-- **Body**: Job object with final status
-
-#### Response Object
-
-The returned job object will have the following key characteristics:
-
-- Job ID preserved
-- Status of the job
-- Final result/output - also a base64 encoded zip file
-- **Note**: `Input` and `Path` fields are deliberately cleared before response
-
-#### Possible Job Statuses
-
-- Pending
-- Processing
-- Partial
-- Completed
-- Failed
-
-#### Error Responses
-
-- **404 Not Found**: Job ID does not exist
-- **500 Internal Server Error**: Server-side processing error
+Soon!
 
 ## Technical Characteristics
 
