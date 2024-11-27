@@ -1,0 +1,5 @@
+[build]
+delay = 1000
+kill_delay = 0
+cmd = "swag init && go build -o ./tmp/main ."
+exclude_dir = ["assets", "tmp", "vendor", "testdata", "docs", "data"]
