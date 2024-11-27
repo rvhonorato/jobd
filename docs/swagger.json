@@ -1,8 +1,12 @@
 {
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "description": "API for managing job queue in jobd application",
+        "title": "jobd (Job Daemon) API",
+        "contact": {},
+        "version": "1.0"
     },
+    "basePath": "/api",
     "paths": {
         "/api/get/{id}": {
             "get": {

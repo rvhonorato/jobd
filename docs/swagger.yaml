@@ -1,3 +1,4 @@
+basePath: /api
 definitions:
   errors.RestErr:
     properties:
@@ -31,6 +32,9 @@ definitions:
     type: object
 info:
   contact: {}
+  description: API for managing job queue in jobd application
+  title: jobd (Job Daemon) API
+  version: "1.0"
 paths:
   /api/get/{id}:
     get:

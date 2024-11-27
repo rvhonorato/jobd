@@ -19,8 +19,11 @@ func init() {
 	flag.Parse()
 }
 
+// @title jobd (Job Daemon) API
+// @version 1.0
+// @description API for managing job queue in jobd application
+// @BasePath /api
 func main() {
-
 	errDB := db.InitDB()
 	if errDB != nil {
 		log.Fatal(errDB)
@@ -35,5 +38,4 @@ func main() {
 
 	r := router.SetupRouter()
 	_ = r.Run()
-
 }
