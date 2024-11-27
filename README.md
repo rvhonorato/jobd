@@ -64,7 +64,7 @@ returned as the `output`.
 
 ### Example
 
-> `jobd` was not designed for this type of interaction, but rather via automated
+> ⚠️ `jobd` was not designed for this type of interaction, but rather via automated
 > scripts. The workflow below is just to demonstrate how it works.
 
 [PRODIGY](https://github.com/haddocking/prodigy) is a command-line application
@@ -147,7 +147,7 @@ curl -X POST http://your.server:8080/api/upload \
 
 And later download the results by making a `GET` request to `/api/get/name-of-my-job`
 
-## Configuration
+## Setup
 
 The application is optimized for containerized environments,
 supporting multi-stage build patterns or simple binary execution.
@@ -202,4 +202,5 @@ ENTRYPOINT [ "/bin/jobd" ]
 - Lightweight and containerization-friendly
 - Designed for research and scientific computing environments
 
-The application provides a standardized, portable mechanism for programmatic file and job interactions across different research software platforms.
+The application provides a standardized, portable mechanism for programmatic
+file and job interactions across different research software platforms.
