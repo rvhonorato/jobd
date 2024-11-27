@@ -193,12 +193,24 @@ RUN tar -xzf /tmp/jobd_${JOBD_VERSION}_${JOBD_ARCH}.tar.gz -C /bin/ \
 ENTRYPOINT [ "/bin/jobd" ]
 ```
 
-## Technical Characteristics
+## Key points
+- Language: Golang
+- Type: Lightweight REST API-based job management microservice
+- Primary Purpose: Facilitate interaction between web backends and research software
+- Containerization-native design
+- Embedded microdatabase for job tracking
+- Polls database every second for QUEUED tasks
+- Executes run.sh script via system call
+- Captures and reports script exit code
+- Compresses and returns job results
+- Multi-stage Docker builds
+- Direct binary execution
+- Research computing platforms
+- Microservice architectures
+- Scientific software workflows
+- Minimal system overhead
+- Flexible integration with research software
 
-- Written in Golang for performance and simplicity
-- REST API-based communication
-- Lightweight and containerization-friendly
-- Designed for research and scientific computing environments
+## Contact
 
-The application provides a standardized, portable mechanism for programmatic
-file and job interactions across different research software platforms.
+If you think this project would be useful for your use case or would like to suggest something, please reach out either via issue here or via email. (:
