@@ -115,10 +115,8 @@ Then prepare the payload, it must contain the `run.sh` file and the input files.
 Prepare the payload;
 
 ```bash
-# Make a zip file called `input.zip`
+# Make a zip file called `files.zip`
 $ zip files.zip run.sh input.pdb
-# convert it to base64
-$ base64 files.zip > files.zip.b64
 ```
 
 Then prepare the input `.json` file - it is expected to be in the following format:
