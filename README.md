@@ -39,7 +39,7 @@ Implements two primary REST API endpoints:
 - `POST /api/upload` Allows backend systems or scripts to upload files to the container
 - `GET /api/get/:id` Enables retrieval of files (results) from the container
 
-Check the [API docs](https://rvhonorato.me/jobd) for more information
+Check the [API docs](https://rvhonorato.github.io/jobd/) for more information
 
 Use Cases
 
