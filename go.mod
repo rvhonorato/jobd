@@ -5,7 +5,7 @@ go 1.23
 require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-co-op/gocron v1.37.0
-	github.com/golang/glog v1.2.3
+	github.com/golang/glog v1.2.4
 	github.com/google/uuid v1.6.0
 	github.com/nanobox-io/golang-scribble v0.0.0-20190309225732-aa3e7c118975
 	github.com/swaggo/files v1.0.1
